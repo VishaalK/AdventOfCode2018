@@ -38,8 +38,8 @@ def get_filled_grid(grid_size, grid_serial_number):
 
     return grid
 
-def compute_max_cell(grid, grid_size):
-    cell_power_levels = [(x, y, compute_cell_power_level(grid, x, y)) for (x,y) in generate_grid_points(grid_size - 3, grid_size - 3)]
+def compute_max_cell(grid, grid_size, cell_size):
+    cell_power_levels = [(x, y, compute_cell_power_level(grid, x, y, cell_size)) for (x,y) in generate_grid_points(grid_size - cell_size, grid_size - cell_size)]
     return max(cell_power_levels, key=lambda x: x[2])
 
 grid_serial_number = 7403
@@ -47,7 +47,7 @@ grid_size = 300
 
 def drive(grid_size, grid_serial_number):
     grid = get_filled_grid(grid_size, grid_serial_number)
-    max_cell = compute_max_cell(grid, grid_size)
+    max_cell = compute_max_cell(grid, grid_size, 3)
     return max_cell
 
 def test_one():
@@ -58,6 +58,19 @@ def test_two():
     serial_number = 42
     return drive(300, serial_number)
 
-# print(test_one())
-# print(test_two())
-print(drive(grid_size, grid_serial_number))
+# assert test_one() == (33, 45, 29)
+# assert test_two() == (21, 61, 30)
+
+# print(drive(grid_size, grid_serial_number))
+
+def drive_part2(grid_size, grid_serial_number):
+    grid = get_filled_grid(grid_size, grid_serial_number)
+    power_levels = [(*compute_max_cell(grid, grid_size, cell_size), cell_size) for cell_size in range(300)]
+    return max(power_levels, key=lambda pl: pl[2])
+
+# assert drive_part2(300, 18) == (90, 269, 113, 16)
+# assert drive_part2(300, 42) == (232, 251, 119, 12)
+
+print(drive_part2(300, 7403))
+
+# print
