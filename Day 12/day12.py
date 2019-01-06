@@ -14,11 +14,11 @@ def parse_coda(coda):
 
 assert parse_coda('...## => #\n') == ['...##', '#']
 
-def pad_initial_state(initial_state):
+def pad_state(initial_state):
     return '..' + initial_state + '..'
 
 def get_neighborhoods(state, length):
-    state = pad_initial_state(state)
+    state = pad_state(state)
     return [state[i-length:i+length+1] for (i, _) in enumerate(state) if i >= 2 and i < len(state) - 2]
 
 neighborhood_length = 2
@@ -45,28 +45,55 @@ coda_dict = get_codas(input_lines[2:])
 assert coda_dict['...##'] == '#'
 assert coda_dict['.....'] == '.'
 
-def evolve(state, codas):
+def evolve(state, center_idx, codas):
+    # add the appropriate amount of empty pots to the left and right
+    # this means finding the index of the first and last flowered pots, and if they are too close to the ends,
+    # padding the appropriate amount and adjusting the center_idx
+    flowered_idxs = [idx for (idx, val) in enumerate(state) if val == '#']
+    # print(flowered_idxs)
+    first_idx, last_idx = flowered_idxs[0], flowered_idxs[len(flowered_idxs) - 1]
+    # print('first:', first_idx, 'last:', last_idx, 'len:', len(state))
+    if (first_idx < 2):
+        state = '.'*first_idx + state
+    if (last_idx > len(state) - 2):
+        state = state + (len(state) - last_idx)*'.'
+
     mapped = map(lambda n: codas[n], get_neighborhoods(state, length=neighborhood_length))
     tup = tuple(mapped)
-    # print(tup)
-    return ''.join(tup)
+    # print('stage', i, ''.join(tup))
+    return (''.join(tup), center_idx)
 
-stage1 = evolve(initial_state, coda_dict)
-# expected = '#...#....#.....#..#..#..#.........'
-# print('initial:', initial_state)
+(stage1, center_idx) = evolve(initial_state, 0, coda_dict)
+expected = '...#...#....#.....#..#..#..#...........'
 
-# print('stage1:', stage1, 'expected:', expected)
+print('stage1:', stage1, 'expected:', expected)
 
-# print(len(stage1), len(expected), len(initial_state))
-# assert stage1 == expected
+assert stage1 in expected
 
-def drive(num_generations, state, codas):
+(stage2, center_idx) = evolve(stage1, center_idx, coda_dict)
+stage2_expected = '...##..##...##....#..#..#..##..........'
+
+assert stage2 in stage2_expected
+
+stage20 = initial_state
+center_idx = 0
+for i in range(20):
+    print('stage', i, stage20)
+    (stage20, center_idx) = evolve(stage20, center_idx, coda_dict)
+
+stage20_expected = '.#....##....#####...#######....#.#..##.'
+print('stage20:', stage20, 'expected:', stage20_expected)
+
+assert stage20 in stage20_expected
+
+def drive(num_generations, state, center_idx, codas):
     for i in range(num_generations):
-        state = evolve(state, codas)
+        (state, center_idx) = evolve(state, center_idx, codas)
+        print('stage', i, state)
 
-    return sum([i for (i,c) in enumerate(state) if c == '#'])
+    return sum([(i-center_idx) for (i,c) in enumerate(state) if c == '#'])
 
-print(drive(20, initial_state, coda_dict))
+print(drive(20, initial_state, 0, coda_dict))
 
-'.#....##....#####...#######....#.#..##.'
-'#.#..#.#..#.#..#..#..#..#'
+# '.#....##....#####...#######....#.#..##.'
+# '#.#..#.#..#.#..#..#..#..#
