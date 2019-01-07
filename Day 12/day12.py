@@ -1,7 +1,7 @@
 import re
 from collections import defaultdict
 
-input_lines = open("day12test.txt").readlines()
+input_lines = open("day12test2.txt").readlines()
 
 def parse_initial_state(line):
     return re.findall('([#|.]+)', line)[0]
@@ -41,9 +41,30 @@ def get_codas(input_codas):
 # print(input_lines[2:])
 coda_dict = get_codas(input_lines[2:])
 
+expected_stages = ['...#...#....#.....#..#..#..#...........',
+                    '...##..##...##....#..#..#..##..........',
+                    '..#.#...#..#.#....#..#..#...#..........',
+                    '...#.#..#...#.#...#..#..##..##.........',
+                    '....#...##...#.#..#..#...#...#.........',
+                    '....##.#.#....#...#..##..##..##........',
+                    '...#..###.#...##..#...#...#...#........',
+                    '...#....##.#.#.#..##..##..##..##.......',
+                    '...##..#..#####....#...#...#...#.......',
+                    '..#.#..#...#.##....##..##..##..##......',
+                    '...#...##...#.#...#.#...#...#...#......',
+                    '...##.#.#....#.#...#.#..##..##..##.....',
+                    '..#..###.#....#.#...#....#...#...#.....',
+                    '..#....##.#....#.#..##...##..##..##....',
+                    '..##..#..#.#....#....#..#.#...#...#....',
+                    '.#.#..#...#.#...##...#...#.#..##..##...',
+                    '..#...##...#.#.#.#...##...#....#...#...',
+                    '..##.#.#....#####.#.#.#...##...##..##..',
+                    '.#..###.#..#.#.#######.#.#.#..#.#...#..',
+                    '.#....##....#####...#######....#.#..##.']
+
 # print(coda_dict)
-assert coda_dict['...##'] == '#'
-assert coda_dict['.....'] == '.'
+# assert coda_dict['...##'] == '#'
+# assert coda_dict['.....'] == '.'
 
 def evolve(state, center_idx, codas):
     # add the appropriate amount of empty pots to the left and right
@@ -54,7 +75,8 @@ def evolve(state, center_idx, codas):
     first_idx, last_idx = flowered_idxs[0], flowered_idxs[len(flowered_idxs) - 1]
     # print('first:', first_idx, 'last:', last_idx, 'len:', len(state))
     if (first_idx < 2):
-        state = '.'*first_idx + state
+        state = '.'*(2 - first_idx) + state
+        center_idx = center_idx + (2-first_idx)
     if (last_idx > len(state) - 2):
         state = state + (len(state) - last_idx)*'.'
 
@@ -63,36 +85,54 @@ def evolve(state, center_idx, codas):
     # print('stage', i, ''.join(tup))
     return (''.join(tup), center_idx)
 
-(stage1, center_idx) = evolve(initial_state, 0, coda_dict)
-expected = '...#...#....#.....#..#..#..#...........'
 
-print('stage1:', stage1, 'expected:', expected)
+# print('initial_state:', initial_state)
+def drive_test(num_generations, state, center_idx, codas, expected_stages):
+    for i in range(num_generations):
+        (state, center_idx) = evolve(state, center_idx, codas)
+        # print('stage', i, state, 'expected:', expected_stages[i], 'center_idx', center_idx)
+        # assert state in expected_stages[i]
 
-assert stage1 in expected
+    return sum([(i-center_idx) for (i,c) in enumerate(state) if c == '#'])
 
-(stage2, center_idx) = evolve(stage1, center_idx, coda_dict)
-stage2_expected = '...##..##...##....#..#..#..##..........'
+# ans = drive_test(20, initial_state, 0, coda_dict, expected_stages)
+# print(ans)
 
-assert stage2 in stage2_expected
+# (stage1, center_idx) = evolve(initial_state, 0, coda_dict)
+# expected = '...#...#....#.....#..#..#..#...........'
 
-stage20 = initial_state
-center_idx = 0
-for i in range(20):
-    print('stage', i, stage20)
-    (stage20, center_idx) = evolve(stage20, center_idx, coda_dict)
+# print('stage1:', stage1, 'expected:', expected)
 
-stage20_expected = '.#....##....#####...#######....#.#..##.'
-print('stage20:', stage20, 'expected:', stage20_expected)
+# assert stage1 in expected
 
-assert stage20 in stage20_expected
+# (stage2, center_idx) = evolve(stage1, center_idx, coda_dict)
+# stage2_expected = '...##..##...##....#..#..#..##..........'
+
+# assert stage2 in stage2_expected
+
+# stage20 = initial_state
+# center_idx = 0
+# for i in range(20):
+#     print('stage', i, stage20)
+#     (stage20, center_idx) = evolve(stage20, center_idx, coda_dict)
+
+# stage20_expected = '.#....##....#####...#######....#.#..##.'
+# print('stage20:', stage20, 'expected:', stage20_expected)
+
+# assert stage20 in stage20_expected
 
 def drive(num_generations, state, center_idx, codas):
     for i in range(num_generations):
         (state, center_idx) = evolve(state, center_idx, codas)
-        print('stage', i, state)
+        print('stage', i, state, center_idx)
 
     return sum([(i-center_idx) for (i,c) in enumerate(state) if c == '#'])
 
+# assert coda_dict['#....'] == '.'
+# assert coda_dict['#..##'] == '#'
+
+initial_state = parse_initial_state(input_lines[0])
+print(initial_state)
 print(drive(20, initial_state, 0, coda_dict))
 
 # '.#....##....#####...#######....#.#..##.'
