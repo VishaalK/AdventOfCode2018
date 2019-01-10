@@ -1,8 +1,19 @@
+import numpy
+
 loop = r"""
 /----\
 |    |
 |    |
 \----/
+"""
+
+game_grid = r"""
+/->-\        
+|   |  /----\
+| /-+--+-\  |
+| | |  | v  |
+\-+-/  \-+--/
+  \------/ 
 """
 
 # print(loop)
@@ -21,7 +32,15 @@ def string_to_grid(string):
 # keep track of the cycle of each cart
 # keep track of the direction of each cart
 
-string_to_grid(loop)
+
+string_to_grid(game_grid)
+
+def create_game_grid(input_lines):
+    grid_x = max(map(len, input_lines))
+    grid_y = len(input_lines)
+    return numpy.array([[' ']*grid_x for i in range(grid_y)])
 
 def tick(world_state):
-        return world_state
+    return world_state
+
+print(create_game_grid(game_grid.split('\n')))
