@@ -65,6 +65,17 @@ def update_grid():
 def tick(world_state):
     return world_state
 
+# returns pairs of points who collided, should technically only be one
+# can make it fast by doing binary search, but linear is probably enough
+def collision(just_moved_point, points):
+    collisions = [(i, p) for (i, p) in enumerate(points) if p == just_moved_point]
+    if (len(collisions)):
+        return collisions[0]
+    else:
+        return 
+
+assert collision((1,2), [(1,2), (3,4)]) == (0,(1,2))
+
 # print(create_game_grid(game_grid.split('\n')))
 
 lines = tuple(map(lambda l: l.rstrip('\n'), open("gridtest.txt").readlines()))
