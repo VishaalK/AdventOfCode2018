@@ -56,8 +56,34 @@ def get_points_from_grid(grid):
 
     return ret
 
-def compute_movements():
+def compute_movements(points, grid):
+    first = points[0]
+    tile = grid[first[0], first[1]]
+    # we can assume the points go in order
     raise Exception("Sup")
+
+def get_direction(tile):
+    north, south, east, west = (0, -1), (0, 1), (1, 0), (-1, 0)
+    if tile == '>':
+        return east
+    elif tile == '<':
+        return west
+    elif tile == '^':
+        return north
+    elif tile == 'v':
+        return south
+    else:
+        raise Exception("getting direction for non-directional tile")
+
+# carts are position, directions
+def move_cart(cart):
+    cart.position += get_direction(cart.tile)
+    return cart.position
+
+def update_cart(cart, grid):
+    (new_x, new_y) = move_cart(cart)
+    cart.tile = grid[x, y]
+# depending on where they end up, we change their direction
 
 def update_grid():
     raise Exception("Sup")
