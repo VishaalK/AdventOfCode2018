@@ -62,10 +62,12 @@ def get_points_from_grid(grid):
     return ret
 
 def compute_movements(points, grid):
-    first = points[0]
-    tile = grid[first[0], first[1]]
+    # assume they are in correct order
+    for cart in points:
+        new_position = move_cart(cart)
+
     # we can assume the points go in order
-    raise Exception("Sup")
+    # raise Exception("Sup")
 
 north, south, east, west = (0, -1), (0, 1), (1, 0), (-1, 0)
 
