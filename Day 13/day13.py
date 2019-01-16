@@ -61,10 +61,7 @@ def get_points_from_grid(grid):
 
     return ret
 
-def compute_movements(points, grid):
-    # assume they are in correct order
-    for cart in points:
-        new_position = move_cart(cart)
+
 
     # we can assume the points go in order
     # raise Exception("Sup")
@@ -152,6 +149,16 @@ def collision(just_moved_point, points):
 
 assert collision((1,2), [(1,2), (3,4)]) == (0,(1,2))
 
+def compute_movements(points, grid):
+    # assume they are in correct order
+    # take one from the left, and put it into the sorted one on the right
+    # and compare the new position against both of them
+    for cart in points:
+        new_position = move_cart(cart)
+        collisions = collision(new_position, points)
+        if (len(collisions)):
+            print(collisions)
+        
 # print(create_game_grid(game_grid.split('\n')))
 lines = tuple(map(lambda l: l.rstrip('\n'), open("gridtest.txt").readlines()))
 
