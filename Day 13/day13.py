@@ -153,12 +153,17 @@ def compute_movements(points, grid):
     # assume they are in correct order
     # take one from the left, and put it into the sorted one on the right
     # and compare the new position against both of them
-    for cart in points:
+    processed_points = []
+    for (i, cart) in enumerate(points):
         new_position = move_cart(cart)
-        collisions = collision(new_position, points)
+        collisions = collision(new_position, points[i+1:])
+        collisions = collision(new_position, processed_points)
         if (len(collisions)):
-            print(collisions)
-        
+            return collisions
+
+        # this need to be sorted
+        processed_points.append(new_position)
+
 # print(create_game_grid(game_grid.split('\n')))
 lines = tuple(map(lambda l: l.rstrip('\n'), open("gridtest.txt").readlines()))
 
